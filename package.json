@@ -1,0 +1,10 @@
+{
+  "name": "nova-algebra-x",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An interactive algebra exhibition with a server-side Gemini tutor.",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": { "start": "node server.js", "dev": "node server.js", "test": "node --test" },
+  "dependencies": { "@google/genai": "2.31.0", "dotenv": "^17.2.3", "express": "^5.1.0" }
+}
