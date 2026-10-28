@@ -51,10 +51,20 @@ export function createApp({ apiKey = process.env.GEMINI_API_KEY, model = process
     next();
   });
   app.use('/api', (req, res, next) => {
-    if (req.method !== 'POST') return next();
     const origin = req.get('origin');
     let foreign = req.get('sec-fetch-site') === 'cross-site';
-    if (origin) { try { foreign ||= new URL(origin).host !== req.get('host'); } catch { foreign = true; } }
+    if (origin) {
+      try {
+        const u = new URL(origin);
+        foreign = u.host !== req.get('host') && !u.hostname.endsWith('github.io') && !u.hostname.endsWith('onrender.com');
+      } catch { foreign = true; }
+    }
+    if (origin && !foreign) {
+      res.set('Access-Control-Allow-Origin', origin);
+      res.set('Access-Control-Allow-Headers', 'Content-Type, x-gemini-api-key');
+    }
+    if (req.method === 'OPTIONS') return res.sendStatus(204);
+    if (req.method !== 'POST') return next();
     if (foreign) return res.status(403).json({ error: 'Requests must come from this website.', code: 'ORIGIN_REJECTED' });
     if (!req.is('application/json')) return res.status(415).json({ error: 'Send application/json.', code: 'CONTENT_TYPE' });
     next();
@@ -127,8 +137,8 @@ export function createApp({ apiKey = process.env.GEMINI_API_KEY, model = process
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const argument = name => { const index = process.argv.indexOf(name); return index < 0 ? undefined : process.argv[index + 1]; };
   const port = Number(argument('--port') || process.env.PORT || 3000);
-  const host = argument('--host') || process.env.HOST || '127.0.0.1';
+  const host = argument('--host') || process.env.HOST || (process.env.RENDER || process.env.PORT ? '0.0.0.0' : '127.0.0.1');
   if (!Number.isInteger(port) || port < 1 || port > 65535) { console.error('PORT must be an integer from 1 to 65535.'); process.exit(1); }
-  createApp().listen(port, host, () => console.log(`Nova Algebra X is ready at http://localhost:${port}`))
+  createApp().listen(port, host, () => console.log(`Nova Algebra X is ready on ${host}:${port}`))
     .on('error', err => { console.error(err.code === 'EADDRINUSE' ? 'This port is in use. Change PORT in .env.' : 'The server could not start. Check HOST and PORT.'); process.exitCode = 1; });
 }
