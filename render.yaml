@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: nova-algebra-x
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: PORT
+        value: 3000
+      - key: HOST
+        value: 0.0.0.0
