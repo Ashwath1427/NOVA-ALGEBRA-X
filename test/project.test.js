@@ -91,4 +91,64 @@ test('custom client api key header works when server has no key', async () => {
  });
 });
 
+test('linear equations with arbitrary variables other than x', () => {
+ assert.equal(format(solve('3y - 4 = 11').solution), '5');
+ assert.equal(solve('3y - 4 = 11').variable, 'y');
+ assert.equal(format(solve('5n + 10 = 2n + 25').solution), '5');
+ assert.equal(solve('5n + 10 = 2n + 25').variable, 'n');
+ assert.equal(format(solve('4(t - 3) = 2(t + 5)').solution), '11');
+ assert.equal(solve('4(t - 3) = 2(t + 5)').variable, 't');
+ assert.equal(format(solve('2a + 5 = 13').solution), '4');
+ assert.equal(solve('2a + 5 = 13').variable, 'a');
+ assert.equal(format(solve('-3z + 6 = 12').solution), '-2');
+ assert.equal(solve('-3z + 6 = 12').variable, 'z');
+ assert.equal(format(solve('2', '5', '13', 'y').solution), '4');
+ assert.equal(solve('2', '5', '13', 'y').variable, 'y');
+ assert.equal(solve('0z + 5 = 5').type, 'infinite');
+ assert.equal(solve('0w + 2 = 8').type, 'none');
+ assert.equal(solve('2y + 4 = 2y + 4').type, 'infinite');
+ assert.equal(solve('2y + 4 = 2y + 7').type, 'none');
+});
+
+test('quadratic equations and non-x variables', () => {
+ const q1 = solve('x^2 - 5x + 6 = 0');
+ assert.equal(q1.type, 'quadratic_two_roots');
+ assert.equal(format(q1.solutions[0]), '3');
+ assert.equal(format(q1.solutions[1]), '2');
+
+ const q2 = solve('y^2 = 16');
+ assert.equal(q2.type, 'quadratic_two_roots');
+ assert.equal(q2.variable, 'y');
+ assert.equal(format(q2.solutions[0]), '4');
+ assert.equal(format(q2.solutions[1]), '-4');
+
+ const q3 = solve('2z^2 + 5z - 3 = 0');
+ assert.equal(q3.type, 'quadratic_two_roots');
+ assert.equal(q3.variable, 'z');
+ assert.equal(format(q3.solutions[0]), '1/2');
+ assert.equal(format(q3.solutions[1]), '-3');
+
+ const q4 = solve('w^2 + 1 = 0');
+ assert.equal(q4.type, 'quadratic_complex');
+ assert.equal(q4.variable, 'w');
+});
+
+test('expression simplification and natural language algebra queries', () => {
+ const exp1 = solve('3x + 2x - 5 + 8');
+ assert.equal(exp1.type, 'expression');
+ assert.equal(exp1.simplified, '5x + 3');
+
+ const exp2 = solve('(x + 2)(x + 3)');
+ assert.equal(exp2.type, 'expression');
+ assert.equal(exp2.simplified, 'x² + 5x + 6');
+
+ const nat1 = solve('Solve for y: 4y - 12 = 0');
+ assert.equal(format(nat1.solution), '3');
+ assert.equal(nat1.variable, 'y');
+
+ const nat2 = solve('What is the difference between an equation and an expression?');
+ assert.equal(nat2.type, 'ai_question');
+ assert.equal(nat2.isQuestion, true);
+});
+
 

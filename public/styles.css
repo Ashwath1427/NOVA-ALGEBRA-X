@@ -19,3 +19,32 @@
 .key-button.secondary:hover{border-color:#486b97}
 .api-key-feedback{font-size:10px;margin-top:6px;color:#74cadf}
 .api-key-feedback.error{color:#ff9e9e}
+/* Calculator mode switcher & universal algebra solver styles */
+.calc-tabs{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px}
+.calc-tab{background:#0c1525;border:1px solid #233650;color:#9bb0c9;padding:8px 16px;border-radius:8px;font-size:11px;font-weight:600;transition:all .2s;cursor:pointer}
+.calc-tab:hover{color:var(--cyan);border-color:#3b5a7a}
+.calc-tab.active{background:#132d44;border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px #2ed5f31a}
+.universal-input-wrapper{margin-top:10px}
+.universal-input-wrapper textarea{width:100%;font-size:15px;padding:14px;min-height:75px;resize:vertical;line-height:1.5;font-family:inherit;background:#080f1e;border:1px solid #2c3b52;border-radius:9px;color:var(--text)}
+.math-keypad{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 16px}
+.math-keypad button{background:#101c30;border:1px solid #263852;color:#a2b8d2;padding:6px 11px;border-radius:6px;font-size:12px;font-weight:600;transition:all .15s;cursor:pointer}
+.math-keypad button:hover{border-color:var(--cyan);color:var(--cyan);background:#142540}
+.standard-input-grid{display:grid;grid-template-columns:85px 1fr 1fr 1fr;gap:10px}
+.standard-input-grid select{width:100%;font-size:18px;margin-top:8px;font-weight:bold;color:var(--cyan);cursor:pointer}
+.ai-solution-box{margin-top:24px;padding:18px 20px;border:1px solid #295368;border-radius:10px;background:linear-gradient(135deg,#0e223688,#0a1728)}
+.ai-box-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #1f374d}
+.ai-box-title{font-size:13px;color:#aae4ef;display:flex;align-items:center;gap:8px;font-weight:600}
+.ai-box-controls{display:flex;align-items:center;gap:12px}
+.ai-toggle-label{font-size:11px;color:#8fa6c1;display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.ai-toggle-label input{cursor:pointer}
+.ai-explain-body{font-size:12px;line-height:1.8;color:#c4d8ed;white-space:pre-wrap;overflow-wrap:anywhere}
+.ai-explain-body.loading{color:#79bed2;font-style:italic;animation:glimmer 1.5s infinite}
+.ai-explain-prompt{font-size:11px;color:#7f97b2;line-height:1.6}
+.ai-explain-footer{margin-top:14px;padding-top:10px;border-top:1px solid #1a2f42;display:flex;justify-content:space-between;align-items:center}
+.ai-explain-footer button{background:none;border:none;color:#8cdeee;cursor:pointer;font-size:11px;padding:0}
+.ai-explain-footer button:hover{text-decoration:underline}
+@media(max-width:760px){
+  .standard-input-grid{grid-template-columns:1fr 1fr}
+  .calc-tabs{overflow-x:auto;flex-wrap:nowrap}
+  .calc-tab{white-space:nowrap}
+}

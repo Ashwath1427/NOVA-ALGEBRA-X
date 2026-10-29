@@ -31,5 +31,16 @@ Build and live AI integration verified on 28 October 2026 with Node.js 24 and Ex
   - Received context-aware confirmation substituting `x = 12` into `2x + 3 = 27` yielding `27 = 27`.
 - [x] **Interactive Calculator**: Equation solving (`2x + 5 = 13` -> `x = 4`), infinite solutions, and arithmetic verified.
 - [x] **Learning Lab**: Interactive slope/intercept coordinate graph and challenge verification intact.
-- [x] **Automated Tests**: 17 tests passed (0 failed), including regression coverage for model overload, deadline timeouts, and sanitized diagnostics.
+- [x] **Automated Tests**: 21 tests passed (0 failed), including regression coverage for model overload, deadline timeouts, sanitized diagnostics, multi-variable linear equations, quadratic equations, and expression simplification.
+- [x] **Universal Multi-Variable Solver**:
+  - Solves linear & quadratic equations in any variable (`x`, `y`, `z`, `n`, `t`, `a`, `b`, etc.).
+  - Handles variables on both sides (e.g. `5n + 10 = 2n + 25` -> `n = 5`).
+  - Handles parentheses and distributive property (e.g. `4(t - 3) = 2(t + 5)` -> `t = 11`).
+  - Handles quadratic equations with discriminant analysis and roots (e.g. `x^2 - 5x + 6 = 0`, `y^2 = 16`, `2z^2 + 5z - 3 = 0`).
+  - Standard form mode updated with variable selector dropdown (`x`, `y`, `z`, `n`, `t`, `a`...).
+- [x] **Nova AI Explanation Integration**:
+  - "✦ Explain with Nova AI" button embedded directly into every solution card.
+  - Explains the underlying concepts, equality properties, and intuition.
+  - Automatically answers and explains general/conceptual algebra questions typed into the calculator.
+  - "Ask follow-up in Nova AI Tutor ↗" shortcut seamlessly carries context into the chat tutor.
 - [x] **Security**: No secrets or API keys exposed in browser, logs, tests, or repository. `.env` is ignored by `.gitignore`.

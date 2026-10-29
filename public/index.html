@@ -25,12 +25,98 @@
 <div class="feature-grid"><a class="feature-card" href="#calculator"><div class="card-top"><span class="feature-icon">ƒ</span><span class="card-number">01</span></div><h3>Algebra Calculator</h3><p>Turn equations into understanding. Solve for x with every step explained.</p><span class="text-link">Let’s solve it <span>↗</span></span></a><a class="feature-card" href="#tutor"><div class="card-top"><span class="feature-icon">✦</span><span class="card-number">02</span></div><h3>Nova AI Tutor</h3><p>A little stuck? Ask a question and explore the why behind the answer.</p><span class="text-link">Start a conversation <span>↗</span></span></a><a class="feature-card" href="#learn"><div class="card-top"><span class="feature-icon">⌁</span><span class="card-number">03</span></div><h3>Interactive Learning</h3><p>Move a slider. Spot a pattern. See abstract ideas come to life.</p><span class="text-link">Enter the learning lab <span>↗</span></span></a></div>
 <div class="bottom-quote"><span>“</span>Algebra is the language. Your curiosity is the superpower.<span>✦</span></div>
 </section>
-<section id="calculator" class="page" hidden aria-labelledby="calculator-title"><div class="page-heading"><div class="eyebrow">01 / SOLVE & DISCOVER</div><h1 id="calculator-title">Find your <span>unknown.</span></h1><p>One equation. Every step. A clearer way to understand algebra.</p></div>
-<div class="workspace-grid"><div class="panel"><div class="panel-heading"><h2>Algebra Calculator</h2><span class="pill">LINEAR EQUATIONS</span></div><div class="equation-display">a<span>x</span> + b = c</div><form id="equation-form" novalidate><div class="input-grid"><label>Coefficient <b>a</b><input name="a" id="a" value="2" inputmode="decimal" autocomplete="off" maxlength="40" required></label><label>Constant <b>b</b><input name="b" id="b" value="5" inputmode="decimal" autocomplete="off" maxlength="40" required></label><label>Result <b>c</b><input name="c" id="c" value="13" inputmode="decimal" autocomplete="off" maxlength="40" required></label></div><div class="example-row"><span>Try an example</span><button type="button" data-example="3,-4,11">3x − 4 = 11</button><button type="button" data-example="0,5,5">0x + 5 = 5</button><button type="button" data-example="0,2,8">0x + 2 = 8</button></div><div class="button-row"><button class="button primary" type="submit">Solve equation <span>→</span></button><button class="button secondary" id="equation-reset" type="button">Reset</button></div><p id="equation-error" class="error" role="alert"></p></form><p class="fine-print">Decimals and negative numbers welcome. Fractions are shown exactly.</p></div>
-<div class="panel solution-panel" aria-live="polite" aria-atomic="true"><div class="panel-heading"><h2>Your solution</h2><span class="small-label">STEP BY STEP</span></div><div id="solution"><div class="empty-state"><span>𝑥</span><h3>A little mystery. A clear solution.</h3><p>Enter your values and select Solve equation.</p></div></div></div></div>
+<section id="calculator" class="page" hidden aria-labelledby="calculator-title"><div class="page-heading"><div class="eyebrow">01 / SOLVE & DISCOVER</div><h1 id="calculator-title">Find your <span>unknown.</span></h1><p>Solve for any variable, explore any equation, and ask any algebra question with step-by-step clarity.</p></div>
+<div class="workspace-grid"><div class="panel">
+<div class="calc-tabs" role="tablist">
+<button type="button" class="calc-tab active" id="tab-universal" role="tab" aria-selected="true" aria-controls="calc-universal-view">Universal Algebra Solver</button>
+<button type="button" class="calc-tab" id="tab-standard" role="tab" aria-selected="false" aria-controls="calc-standard-view">Standard Form (a·var + b = c)</button>
+</div>
+<div id="calc-universal-view">
+<div class="panel-heading"><h2>Algebra Calculator</h2><span class="pill">ANY VARIABLE & QUESTION</span></div>
+<div class="equation-display" id="universal-preview">3<span>y</span> − 4 = 11</div>
+<form id="universal-form" novalidate>
+<div class="universal-input-wrapper">
+<label class="sr-only" for="universal-input">Enter any equation, expression, or algebra question</label>
+<textarea id="universal-input" rows="2" placeholder="Enter any equation, expression, or algebra question… (e.g. 3y − 4 = 11, 5n + 10 = 2n + 25, 4(t − 3) = 16, x² − 5x + 6 = 0, or 'What is a variable?')" maxlength="500">3y − 4 = 11</textarea>
+</div>
+<div class="math-keypad" aria-label="Quick math keys">
+<button type="button" data-insert="y">y</button>
+<button type="button" data-insert="x">x</button>
+<button type="button" data-insert="z">z</button>
+<button type="button" data-insert="n">n</button>
+<button type="button" data-insert="t">t</button>
+<button type="button" data-insert="a">a</button>
+<button type="button" data-insert="²">²</button>
+<button type="button" data-insert=" + ">+</button>
+<button type="button" data-insert=" − ">−</button>
+<button type="button" data-insert=" = ">=</button>
+<button type="button" data-insert="( )">( )</button>
+<button type="button" data-insert=" / ">÷</button>
+</div>
+<div class="example-row">
+<span>Try an example</span>
+<button type="button" data-uni-example="3y − 4 = 11">3y − 4 = 11</button>
+<button type="button" data-uni-example="5n + 10 = 2n + 25">5n + 10 = 2n + 25</button>
+<button type="button" data-uni-example="4(t − 3) = 2(t + 5)">4(t − 3) = 2(t + 5)</button>
+<button type="button" data-uni-example="x² − 5x + 6 = 0">x² − 5x + 6 = 0</button>
+<button type="button" data-uni-example="y² = 16">y² = 16</button>
+<button type="button" data-uni-example="2a + 5 = 13">2a + 5 = 13</button>
+<button type="button" data-uni-example="(x + 2)(x + 3)">(x + 2)(x + 3)</button>
+<button type="button" data-uni-example="0z + 5 = 5">0z + 5 = 5</button>
+<button type="button" data-uni-example="0w + 2 = 8">0w + 2 = 8</button>
+</div>
+<div class="button-row">
+<button class="button primary" id="universal-submit" type="submit">Solve equation <span>→</span></button>
+<button class="button secondary" id="universal-ask-ai" type="button">Ask Nova AI <span>✦</span></button>
+<button class="button secondary" id="universal-reset" type="button">Reset</button>
+</div>
+<p id="universal-error" class="error" role="alert"></p>
+</form>
+<p class="fine-print">Solves linear and quadratic equations for any variable (x, y, z, n, t, a…), simplifies expressions, and answers algebra questions.</p>
+</div>
+<div id="calc-standard-view" hidden>
+<div class="panel-heading"><h2>Standard Form</h2><span class="pill">COEFFICIENT FORM</span></div>
+<div class="equation-display">a<span id="standard-var-display">x</span> + b = c</div>
+<form id="equation-form" novalidate>
+<div class="standard-input-grid">
+<label>Variable <b>var</b>
+<select id="standard-var" name="var" aria-label="Select variable">
+<option value="x" selected>x</option>
+<option value="y">y</option>
+<option value="z">z</option>
+<option value="n">n</option>
+<option value="t">t</option>
+<option value="a">a</option>
+<option value="b">b</option>
+<option value="m">m</option>
+<option value="w">w</option>
+</select>
+</label>
+<label>Coefficient <b>a</b><input name="a" id="a" value="2" inputmode="decimal" autocomplete="off" maxlength="40" required></label>
+<label>Constant <b>b</b><input name="b" id="b" value="5" inputmode="decimal" autocomplete="off" maxlength="40" required></label>
+<label>Result <b>c</b><input name="c" id="c" value="13" inputmode="decimal" autocomplete="off" maxlength="40" required></label>
+</div>
+<div class="example-row">
+<span>Try an example</span>
+<button type="button" data-example="3,-4,11,y">3y − 4 = 11</button>
+<button type="button" data-example="2,5,13,x">2x + 5 = 13</button>
+<button type="button" data-example="5,10,25,n">5n + 10 = 25</button>
+<button type="button" data-example="0,5,5,x">0x + 5 = 5</button>
+<button type="button" data-example="0,2,8,z">0z + 2 = 8</button>
+</div>
+<div class="button-row">
+<button class="button primary" type="submit">Solve equation <span>→</span></button>
+<button class="button secondary" id="equation-reset" type="button">Reset</button>
+</div>
+<p id="equation-error" class="error" role="alert"></p>
+</form>
+<p class="fine-print">Choose any variable. Decimals and negative numbers welcome. Fractions are shown exactly.</p>
+</div>
+</div>
+<div class="panel solution-panel" aria-live="polite" aria-atomic="true"><div class="panel-heading"><h2>Your solution</h2><span class="small-label">STEP BY STEP</span></div><div id="solution"><div class="empty-state"><span>𝑥</span><h3>A little mystery. A clear solution.</h3><p>Enter any equation, expression, or algebra question and select Solve.</p></div></div></div></div>
 <div class="panel arithmetic-panel"><div><div class="eyebrow">THE EVERYDAY ESSENTIALS</div><h2>Quick arithmetic</h2><p>Add, subtract, multiply, or divide.</p></div><form id="arithmetic-form" novalidate><label class="sr-only" for="left">First number</label><input id="left" placeholder="First number" inputmode="decimal" maxlength="40"><label class="sr-only" for="operation">Operation</label><select id="operation"><option value="add">+ Add</option><option value="subtract">− Subtract</option><option value="multiply">× Multiply</option><option value="divide">÷ Divide</option></select><label class="sr-only" for="right">Second number</label><input id="right" placeholder="Second number" inputmode="decimal" maxlength="40"><button class="button primary" type="submit" aria-label="Calculate arithmetic result">=</button><output id="arithmetic-result" aria-live="polite">Ready when you are.</output></form></div></section>
 <section id="tutor" class="page" hidden aria-labelledby="tutor-title"><div class="page-heading"><div class="eyebrow">02 / ASK & UNDERSTAND</div><h1 id="tutor-title">Meet your thinking <span>partner.</span></h1><p>Every great discovery starts with a question. What’s yours?</p></div><div class="tutor-grid"><aside class="tutor-sidebar"><span class="nova-avatar">✦</span><h2>Nova AI</h2><p>Patient explanations.<br>Small steps. Big discoveries.</p><div class="connection" id="ai-status" role="status">Checking connection…</div><details class="api-key-accordion" id="api-key-accordion"><summary class="api-key-summary"><span>Custom Gemini Key</span><span id="custom-key-indicator" class="key-indicator">Optional</span></summary><div class="api-key-box"><p class="api-key-hint">Enter your Google AI Studio key to use your own quota. Saved in this browser only.</p><div class="api-key-input-row"><input type="password" id="custom-api-key" placeholder="AIzaSy..." autocomplete="off" spellcheck="false" maxlength="120" aria-label="Custom Gemini API Key"><button type="button" class="key-button" id="save-api-key">Save</button><button type="button" class="key-button secondary" id="clear-api-key">Reset</button></div><div id="api-key-feedback" class="api-key-feedback" role="status"></div></div></details><div class="sidebar-rule"></div><h3>Let’s explore</h3><button class="prompt" data-prompt="Explain what a variable is, with an everyday example."><span>01</span> What is a variable? ↗</button><button class="prompt" data-prompt="Solve 3x + 7 = 22 step by step."><span>02</span> Solve an equation ↗</button><button class="prompt" data-prompt="How do I factor x² + 5x + 6? Explain each step."><span>03</span> Make factoring click ↗</button><button class="prompt" data-prompt="What is the difference between an expression and an equation?"><span>04</span> Explore the basics ↗</button><p class="fine-print">Powered by Gemini. AI can make mistakes—check important answers. Messages are sent to Google only when you press Send.</p></aside><div class="chat-panel"><div class="chat-header"><div><span class="status-dot"></span> Your algebra space</div><button class="quiet-button" id="clear-chat">Clear chat ↻</button></div><div id="chat-messages" class="chat-messages" role="log" aria-label="Conversation with Nova AI" aria-live="polite"><div class="welcome-message"><span>✦</span><h2>Let’s turn “I don’t get it”<br>into “I’ve got this.”</h2><p>I’m Nova, your AI algebra tutor. Ask me about equations, expressions, factoring, or the ideas behind them.</p></div></div><div id="chat-error" class="error chat-error" role="alert"></div><form id="chat-form" class="chat-form"><label class="sr-only" for="chat-input">Your mathematics question</label><textarea id="chat-input" rows="2" maxlength="1500" placeholder="Ask anything about algebra…" required></textarea><button class="send-button" id="send-chat" type="submit" aria-label="Send question">↑</button></form><div class="chat-bottom"><span>Enter to send · Shift + Enter for a new line</span><span id="char-count">0 / 1500</span></div></div></div></section>
-<section id="learn" class="page" hidden aria-labelledby="learn-title"><div class="page-heading"><div class="eyebrow">03 / PLAY & EXPLORE</div><h1 id="learn-title">Make the abstract <span>click.</span></h1><p>Change a number. Watch a pattern. That’s algebra in motion.</p></div><div class="workspace-grid"><div class="panel graph-controls"><span class="pill">LIVE GRAPH EXPLORER</span><h2>A line with a story.</h2><p>Explore <b>y = mx + b</b>. The slope <b>m</b> changes the tilt. The intercept <b>b</b> moves the line up or down.</p><div class="live-equation" id="graph-equation">y = 1x + 0</div><label for="slope">Slope <b>m</b><output id="slope-value">1</output></label><input type="range" id="slope" min="-4" max="4" step="0.5" value="1"><div class="range-labels"><span>−4</span><span>0</span><span>4</span></div><label for="intercept">Intercept <b>b</b><output id="intercept-value">0</output></label><input type="range" id="intercept" min="-5" max="5" step="0.5" value="0"><div class="range-labels"><span>−5</span><span>0</span><span>5</span></div><p id="graph-insight" class="insight" aria-live="polite"></p><button id="graph-reset" class="button secondary">Reset graph ↻</button></div><div class="panel graph-panel"><div class="panel-heading"><h2>See the connection</h2><span class="small-label">LIVE / X–Y PLANE</span></div><svg id="graph" viewBox="0 0 440 400" role="img" aria-labelledby="graph-title graph-description"><title id="graph-title">Interactive graph of y = mx + b</title><desc id="graph-description">A straight line on a coordinate plane. Adjust the slope and intercept sliders to explore it.</desc><defs><clipPath id="plot-clip"><rect x="40" y="20" width="360" height="360"/></clipPath></defs><g id="graph-grid"></g><g clip-path="url(#plot-clip)"><path id="graph-line" stroke="#54e3f6" stroke-width="3" fill="none"/><circle id="intercept-point" cx="220" cy="200" r="6" fill="#54e3f6" stroke="#0b1325" stroke-width="3"/></g></svg><p class="fine-print">The glowing point is the y-intercept: (0, b).</p></div></div><div class="panel challenge-panel"><div><div class="eyebrow">A LITTLE CHALLENGE</div><h2>Your turn to find x.</h2><p>Keep both sides balanced. You’ve got this.</p></div><form id="challenge-form" novalidate><strong id="challenge-equation">4x + 3 = 19</strong><label for="challenge-answer">x =</label><input id="challenge-answer" inputmode="decimal" placeholder="?" maxlength="40"><button type="submit" class="button primary">Check answer</button><button type="button" id="next-challenge" class="button secondary">Next ↗</button><p id="challenge-feedback" aria-live="polite"></p></form></div></section>
+<section id="learn" class="page" hidden aria-labelledby="learn-title"><div class="page-heading"><div class="eyebrow">03 / PLAY & EXPLORE</div><h1 id="learn-title">Make the abstract <span>click.</span></h1><p>Change a number. Watch a pattern. That’s algebra in motion.</p></div><div class="workspace-grid"><div class="panel graph-controls"><span class="pill">LIVE GRAPH EXPLORER</span><h2>A line with a story.</h2><p>Explore <b>y = mx + b</b>. The slope <b>m</b> changes the tilt. The intercept <b>b</b> moves the line up or down.</p><div class="live-equation" id="graph-equation">y = 1x + 0</div><label for="slope">Slope <b>m</b><output id="slope-value">1</output></label><input type="range" id="slope" min="-4" max="4" step="0.5" value="1"><div class="range-labels"><span>−4</span><span>0</span><span>4</span></div><label for="intercept">Intercept <b>b</b><output id="intercept-value">0</output></label><input type="range" id="intercept" min="-5" max="5" step="0.5" value="0"><div class="range-labels"><span>−5</span><span>0</span><span>5</span></div><p id="graph-insight" class="insight" aria-live="polite"></p><button id="graph-reset" class="button secondary">Reset graph ↻</button></div><div class="panel graph-panel"><div class="panel-heading"><h2>See the connection</h2><span class="small-label">LIVE / X–Y PLANE</span></div><svg id="graph" viewBox="0 0 440 400" role="img" aria-labelledby="graph-title graph-description"><title id="graph-title">Interactive graph of y = mx + b</title><desc id="graph-description">A straight line on a coordinate plane. Adjust the slope and intercept sliders to explore it.</desc><defs><clipPath id="plot-clip"><rect x="40" y="20" width="360" height="360"/></clipPath></defs><g id="graph-grid"></g><g clip-path="url(#plot-clip)"><path id="graph-line" stroke="#54e3f6" stroke-width="3" fill="none"/><circle id="intercept-point" cx="220" cy="200" r="6" fill="#54e3f6" stroke="#0b1325" stroke-width="3"/></g></svg><p class="fine-print">The glowing point is the y-intercept: (0, b).</p></div></div><div class="panel challenge-panel"><div><div class="eyebrow">A LITTLE CHALLENGE</div><h2>Your turn to find x.</h2><p>Keep both sides balanced. You’ve got this.</p></div><form id="challenge-form" novalidate><strong id="challenge-equation">4x + 3 = 19</strong><label for="challenge-answer" id="challenge-var-label">x =</label><input id="challenge-answer" inputmode="decimal" placeholder="?" maxlength="40"><button type="submit" class="button primary">Check answer</button><button type="button" id="next-challenge" class="button secondary">Next ↗</button><p id="challenge-feedback" aria-live="polite"></p></form></div></section>
 <section id="thanks" class="page" hidden aria-labelledby="thanks-title"><div class="thanks-art" aria-hidden="true"><span>∞</span></div><div class="thanks-content"><div class="eyebrow">KEEP YOUR CURIOSITY IN ORBIT</div><h1 id="thanks-title">Thank You for Visiting<br><span>Nova Algebra X</span></h1><h2>Unlock the Power of Algebra</h2><p>Every question opens a new possibility.<br>Keep exploring, keep discovering, and never stop asking “why?”</p><a class="button primary" href="#home">Return home <span>↗</span></a><div class="thanks-signoff">MADE FOR CURIOUS MINDS. BUILT ON POSSIBILITIES.</div></div></section>
 </main><footer><a href="#home" class="footer-brand">NOVA ALGEBRA <span>X</span></a><p>Where curiosity meets calculation.</p><span>EXPLORE. UNDERSTAND. EVOLVE. <b>↗</b></span></footer>
 <noscript><div class="noscript">Please enable JavaScript to use the calculator, navigation and learning tools.</div></noscript>
