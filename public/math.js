@@ -580,6 +580,9 @@ export function solveAlgebra(rawInput, forcedVar = null) {
   let s = String(rawInput || '').trim();
   if (!s) throw new Error('Please enter an equation or algebra question.');
 
+  const system = solveLinearSystem(s);
+  if (system) return system;
+
   // Clean conversational prefixes
   let cleaned = s.replace(/^(?:solve(?:\s+for\s+([a-zA-Z]))?[:\s]*|find\s+([a-zA-Z])\s+(?:in|when|if)?[:\s]*|what\s+is\s+([a-zA-Z])\s+(?:when|if|in)?[:\s]*|calculate[:\s]*|evaluate[:\s]*)/i, (m, g1, g2, g3) => {
     if (!forcedVar) forcedVar = (g1 || g2 || g3 || '').toLowerCase() || null;
@@ -636,6 +639,89 @@ export function solveAlgebra(rawInput, forcedVar = null) {
       query: rawInput
     };
   }
+}
+
+// Solve simple linear equations in two variables, including a 2×2 system.
+export function solveLinearSystem(input) {
+  const lines = String(input).replace(/\r/g, '').split(/[\n;]/).map(s => s.trim()).filter(Boolean);
+  const equationLines = lines.filter(s => s.includes('='));
+  if (!equationLines.length) return null;
+  const variables = [...new Set((equationLines.join(' ').match(/[a-z]/gi) || []).map(v => v.toLowerCase()))].sort();
+  if (variables.length < 2) return null;
+  if (variables.length !== 2) throw new Error('The calculator currently solves linear equations with two variables (for example, x and y).');
+
+  const parseSide = source => {
+    const s = source.replace(/[−–]/g, '-').replace(/[＋]/g, '+').replace(/\s+/g, '');
+    const terms = s.match(/[+-]?[^+-]+/g);
+    if (!terms?.length || terms.join('') !== s) throw new Error('Use a linear equation such as 2x + 3y = 10.');
+    const result = { [variables[0]]: ZERO, [variables[1]]: ZERO, constant: ZERO };
+    for (const term of terms) {
+      const variableMatch = term.match(/^([+-]?(?:\d+(?:\.\d*)?|\.\d+)?)\*?([a-z])$/i);
+      if (variableMatch && variables.includes(variableMatch[2].toLowerCase())) {
+        const raw = variableMatch[1];
+        const coefficient = raw === '' || raw === '+' ? ONE : raw === '-' ? fraction(-1n) : parseNumber(raw);
+        result[variableMatch[2].toLowerCase()] = add(result[variableMatch[2].toLowerCase()], coefficient);
+      } else if (/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(term)) {
+        result.constant = add(result.constant, parseNumber(term));
+      } else throw new Error('Use linear terms only, such as 2x + 3y = 10. Products of variables and powers are not supported here.');
+    }
+    return result;
+  };
+  const equations = equationLines.map(line => {
+    const halves = line.split('=');
+    if (halves.length !== 2) throw new Error('Enter one equals sign per equation. Put each equation on a new line.');
+    const left = parseSide(halves[0]), right = parseSide(halves[1]);
+    return { a: subtract(left[variables[0]], right[variables[0]]), b: subtract(left[variables[1]], right[variables[1]]), c: subtract(right.constant, left.constant) };
+  });
+  const [x, y] = variables;
+  if (equations.length === 1) {
+    const [e] = equations;
+    if (e.a.n === 0n && e.b.n === 0n) throw new Error('This equation does not contain two variables.');
+    if (e.b.n === 0n) return null;
+    const intercept = divide(e.c, e.b), slope = divide(negate(e.a), e.b);
+    const relation = `${y} = ${format(slope)}${x} ${intercept.n < 0n ? '−' : '+'} ${format(intercept.n < 0n ? negate(intercept) : intercept)}`;
+    let example = null;
+    let bestScore = null;
+    for (let xv = -100; xv <= 100; xv++) for (let yv = -100; yv <= 100; yv++) {
+      const xf = fraction(BigInt(xv)), yf = fraction(BigInt(yv));
+      if (add(add(multiply(e.a, xf), multiply(e.b, yf)), negate(e.c)).n !== 0n) continue;
+      const score = [Number(xv < 0) + Number(yv < 0), Math.abs(xv - yv), Math.abs(xv) + Math.abs(yv), Math.abs(xv), Math.abs(yv)];
+      if (!bestScore || score.some((value, i) => value < bestScore[i] && score.slice(0, i).every((v, j) => v === bestScore[j]))) {
+        bestScore = score;
+        example = { xv: xf, yv: yf };
+      }
+    }
+    if (example) return { type: 'linear_example', variables, banner: `One possible solution: ${x} = ${format(example.xv)}, ${y} = ${format(example.yv)}`, formula: `${format(e.a)}(${format(example.xv)}) + ${format(e.b)}(${format(example.yv)}) = ${format(e.c)} ✓`, steps: [
+      { text: `${format(e.a)}${x} + ${format(e.b)}${y} = ${format(e.c)}`, note: 'Start with the equation.' },
+      { text: `${format(e.a)}(${format(example.xv)}) + ${format(e.b)}(${format(example.yv)}) = ${format(e.c)}`, note: 'Try this simple whole-number pair in the equation.' },
+      { text: `${format(multiply(e.a, example.xv))} + ${format(multiply(e.b, example.yv))} = ${format(e.c)}  ⟹  ${format(e.c)} = ${format(e.c)} ✓`, note: `Both values make the equation true. This is one possible pair; the line ${relation} contains infinitely many real solutions. Add a second equation to determine one unique pair.` }
+    ] };
+    return { type: 'linear_relation', variables, banner: `One equation has infinitely many solutions`, formula: `A linear equation in two variables describes a line: ax + by = c`, steps: [
+      { text: `${format(e.a)}${x} + ${format(e.b)}${y} = ${format(e.c)}`, note: 'Write the equation in standard form.' },
+      { text: `${format(e.b)}${y} = ${format(e.c)} − (${format(e.a)}${x})`, note: `Subtract the ${x}-term from both sides.` },
+      { text: relation, note: `Divide by ${format(e.b)}. Every point on this line is a solution; a second independent equation is needed to find one ordered pair.` }
+    ] };
+  }
+  if (equations.length !== 2) throw new Error('Enter exactly two linear equations, one on each line, to solve for two variables.');
+  const [first, second] = equations;
+  const determinant = subtract(multiply(first.a, second.b), multiply(second.a, first.b));
+  const dx = subtract(multiply(first.c, second.b), multiply(second.c, first.b));
+  const dy = subtract(multiply(first.a, second.c), multiply(second.a, first.c));
+  if (!determinant.n) {
+    const sameLine = !dx.n && !dy.n;
+    return { type: sameLine ? 'linear_relation' : 'no_solution', variables, banner: sameLine ? 'Infinitely many solutions' : 'No solution', formula: sameLine ? 'Dependent equations describe the same line.' : 'Parallel equations have no shared point.', steps: [
+      { text: `D = (${format(first.a)})(${format(second.b)}) − (${format(second.a)})(${format(first.b)}) = 0`, note: 'The coefficient rows are proportional, so the equations do not determine a unique point.' },
+      { text: sameLine ? 'The equations describe the same line ⟹ infinitely many solutions.' : 'The equations describe parallel lines ⟹ no solution.', note: sameLine ? 'Both equations represent the same relationship between the variables.' : 'The left sides are proportional but the constants are not, so the lines never intersect.' }
+    ] };
+  }
+  const sx = divide(dx, determinant), sy = divide(dy, determinant);
+  return { type: 'system_unique', variables, banner: `${x} = ${format(sx)},  ${y} = ${format(sy)}`, formula: `Cramer's rule: ${x} = Dₓ / D, ${y} = Dᵧ / D`, steps: [
+    { text: `${format(first.a)}${x} + ${format(first.b)}${y} = ${format(first.c)}\n${format(second.a)}${x} + ${format(second.b)}${y} = ${format(second.c)}`, note: 'Write the two equations in standard form.' },
+    { text: `D = (${format(first.a)})(${format(second.b)}) − (${format(second.a)})(${format(first.b)}) = ${format(determinant)}`, note: 'Find the coefficient determinant. Since D is not zero, there is one solution.' },
+    { text: `Dₓ = (${format(first.c)})(${format(second.b)}) − (${format(second.c)})(${format(first.b)}) = ${format(dx)};  ${x} = Dₓ / D = ${format(sx)}`, note: `Replace the ${x}-column with the constants, then divide by D.` },
+    { text: `Dᵧ = (${format(first.a)})(${format(second.c)}) − (${format(second.a)})(${format(first.c)}) = ${format(dy)};  ${y} = Dᵧ / D = ${format(sy)}`, note: `Replace the ${y}-column with the constants, then divide by D.` },
+    { text: `${format(first.a)}(${format(sx)}) + ${format(first.b)}(${format(sy)}) = ${format(first.c)};  ${format(second.a)}(${format(sx)}) + ${format(second.b)}(${format(sy)}) = ${format(second.c)} ✓`, note: 'Substitute both values into the original equations; each equation balances.' }
+  ] };
 }
 
 export function solve(aRaw, bRaw, cRaw, variable) {

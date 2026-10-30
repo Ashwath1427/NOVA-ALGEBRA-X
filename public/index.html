@@ -37,7 +37,7 @@
 <form id="universal-form" novalidate>
 <div class="universal-input-wrapper">
 <label class="sr-only" for="universal-input">Enter any equation, expression, or algebra question</label>
-<textarea id="universal-input" rows="2" placeholder="Enter any equation, expression, or algebra question… (e.g. 3y − 4 = 11, 5n + 10 = 2n + 25, 4(t − 3) = 16, x² − 5x + 6 = 0, or 'What is a variable?')" maxlength="500">3y − 4 = 11</textarea>
+<textarea id="universal-input" rows="3" placeholder="Enter an equation, system, expression, or algebra question… (e.g. 2x + 3y = 10 on one line, then x − y = 1 on the next)" maxlength="500">3y − 4 = 11</textarea>
 </div>
 <div class="math-keypad" aria-label="Quick math keys">
 <button type="button" data-insert="y">y</button>
@@ -64,6 +64,7 @@
 <button type="button" data-uni-example="(x + 2)(x + 3)">(x + 2)(x + 3)</button>
 <button type="button" data-uni-example="0z + 5 = 5">0z + 5 = 5</button>
 <button type="button" data-uni-example="0w + 2 = 8">0w + 2 = 8</button>
+<button type="button" data-uni-example="2x + 3y = 10&#10;x − y = 1">2-variable system ↗</button>
 </div>
 <div class="button-row">
 <button class="button primary" id="universal-submit" type="submit">Solve equation <span>→</span></button>
@@ -72,7 +73,7 @@
 </div>
 <p id="universal-error" class="error" role="alert"></p>
 </form>
-<p class="fine-print">Solves linear and quadratic equations for any variable (x, y, z, n, t, a…), simplifies expressions, and answers algebra questions.</p>
+<p class="fine-print">Solves linear and quadratic equations, two-variable linear systems, expressions, and algebra questions. For a system, enter one equation per line.</p>
 </div>
 <div id="calc-standard-view" hidden>
 <div class="panel-heading"><h2>Standard Form</h2><span class="pill">COEFFICIENT FORM</span></div>
