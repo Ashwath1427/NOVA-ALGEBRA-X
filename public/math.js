@@ -128,6 +128,16 @@ export function polyToString(p, variable = 'x') {
   return terms.join(' ') || '0';
 }
 
+function polyEvaluate(p, value) {
+  let result = ZERO;
+  for (let i = p.length - 1; i >= 0; i--) result = add(multiply(result, value), p[i] || ZERO);
+  return result;
+}
+
+function polyEvaluateNumber(p, value) {
+  return p.reduceRight((result, coefficient) => result * value + Number(coefficient.n) / Number(coefficient.d), 0);
+}
+
 function parseTokenNumber(s) {
   const [base, exponent = '0'] = s.toLowerCase().split('e');
   const exp = Number(exponent);
@@ -319,11 +329,12 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
         type: 'infinite',
         variable,
         banner: 'Infinitely many solutions',
+        formula: `0·${variable} = 0   ──➜   Identity (holds true for all real numbers)`,
         summary: `Every value of ${variable} makes this equation true.`,
         steps: [
           { text: `${origLeftStr || polyToString(pLeft, variable)} = ${origRightStr || polyToString(pRight, variable)}`, note: 'Start with your equation.' },
-          { text: `${polyToString(pLeft, variable)} = ${polyToString(pRight, variable)}`, note: 'Both sides simplify to equivalent expressions.' },
-          { text: '0 = 0 ✓', note: 'All terms cancel out. This is an identity true for all numbers.' }
+          { text: `${polyToString(pLeft, variable)} = ${polyToString(pRight, variable)}   ──➜   Both sides are equivalent`, note: 'Both sides simplify to equivalent expressions.' },
+          { text: '0 = 0   ⟹   Identity confirmed! ✓', note: 'All terms cancel out. This is an identity true for all numbers.' }
         ]
       };
     } else {
@@ -331,10 +342,11 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
         type: 'none',
         variable,
         banner: 'No solution',
+        formula: `0·${variable} = ${format(c0)} (≠ 0)   ──➜   Contradiction (no solution exists)`,
         summary: `No value of ${variable} can make this equation true.`,
         steps: [
           { text: `${origLeftStr || polyToString(pLeft, variable)} = ${origRightStr || polyToString(pRight, variable)}`, note: 'Start with your equation.' },
-          { text: `${format(c0)} = 0`, note: 'The variable cancels out, leaving a false statement (contradiction).' }
+          { text: `${format(c0)} = 0   ⟹   Contradiction! ✗`, note: 'The variable cancels out, leaving a false statement.' }
         ]
       };
     }
@@ -352,7 +364,7 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
     const simplifiedLeft = polyToString(pLeft, variable);
     const simplifiedRight = polyToString(pRight, variable);
     if ((origLeftStr && origLeftStr !== simplifiedLeft) || (origRightStr && origRightStr !== simplifiedRight)) {
-      steps.push({ text: `${simplifiedLeft} = ${simplifiedRight}`, note: 'Expand and simplify both sides.' });
+      steps.push({ text: `${origLeftStr || polyToString(pLeft, variable)}   ──➜   ${simplifiedLeft} = ${simplifiedRight}`, note: 'Expand and simplify both sides.' });
     }
 
     const rightVarTerm = pRight[1] || ZERO;
@@ -360,28 +372,30 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
 
     if (rightVarTerm.n !== 0n) {
       steps.push({
-        text: `${polyToString(polySubtract(pLeft, [ZERO, rightVarTerm]), variable)} = ${format(pRight[0] || ZERO)}`,
+        text: `${simplifiedLeft} = ${simplifiedRight}   ──➜   ${polyToString(polySubtract(pLeft, [ZERO, rightVarTerm]), variable)} = ${format(pRight[0] || ZERO)}`,
         note: `Move variable terms to one side (subtract ${polyToString([ZERO, rightVarTerm], variable)} from both sides).`
       });
     }
 
     if (leftConst.n !== 0n) {
       steps.push({
-        text: `${format(c1)}${variable} = ${format(diffConst)}`,
+        text: `${format(c1)}${variable} + (${format(leftConst)}) = ${format(pRight[0] || ZERO)}   ──➜   ${format(c1)}${variable} = ${format(diffConst)}`,
         note: `Move constants to the other side (${leftConst.n > 0n ? `subtract ${format(leftConst)}` : `add ${format(negate(leftConst))}`} from both sides).`
       });
     }
 
     if (c1.n !== c1.d || c1.n !== 1n) {
       steps.push({
-        text: `${variable} = (${format(diffConst)}) ÷ (${format(c1)}) = ${format(sol)}`,
+        text: `${format(c1)}${variable} = ${format(diffConst)}   ──➜   ${variable} = (${format(diffConst)}) ÷ (${format(c1)})   ⟹   ${variable} = ${format(sol)}`,
         note: `Divide both sides by ${format(c1)} to isolate ${variable}.`
       });
     }
 
+    const leftCheck = polyEvaluate(pLeft, sol);
+    const rightCheck = polyEvaluate(pRight, sol);
     steps.push({
-      text: `${polyToString(pLeft, variable).replace(new RegExp(variable, 'g'), `(${format(sol)})`)} = ${polyToString(pRight, variable).replace(new RegExp(variable, 'g'), `(${format(sol)})`)} ✓`,
-      note: `Substitute ${variable} = ${format(sol)} into the original equation to check.`
+      text: `Check at ${variable} = ${format(sol)}: LHS = ${format(leftCheck)}   ⟹   RHS = ${format(rightCheck)} ✓`,
+      note: `Substitute ${variable} = ${format(sol)} into both original sides. They match exactly.`
     });
 
     return {
@@ -390,6 +404,7 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
       x: sol,
       solution: sol,
       banner: `${variable} = ${format(sol)}`,
+      formula: `a·${variable} + b = c   ──➜   a·${variable} = c − b   ──➜   ${variable} = (c − b) / a`,
       approx: sol.d !== 1n ? approximate(sol) : null,
       steps
     };
@@ -406,9 +421,9 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
 
     const steps = [];
     steps.push({ text: `${origLeftStr || polyToString(pLeft, variable)} = ${origRightStr || polyToString(pRight, variable)}`, note: 'Start with your equation.' });
-    steps.push({ text: `${polyToString(pDiff, variable)} = 0`, note: 'Write in standard quadratic form: av² + bv + c = 0.' });
-    steps.push({ text: `a = ${format(a)}, b = ${format(b)}, c = ${format(c)}`, note: 'Identify the quadratic coefficients.' });
-    steps.push({ text: `Δ = b² − 4ac = (${format(b)})² − 4(${format(a)})(${format(c)}) = ${format(bSquared)} − (${format(fourAC)}) = ${format(delta)}`, note: 'Calculate discriminant Δ.' });
+    steps.push({ text: `${origLeftStr || polyToString(pLeft, variable)} = ${origRightStr || polyToString(pRight, variable)}   ──➜   ${polyToString(pDiff, variable)} = 0`, note: `Write in standard quadratic form: a${variable}² + b${variable} + c = 0.` });
+    steps.push({ text: `a = ${format(a)},  b = ${format(b)},  c = ${format(c)}`, note: 'Identify the quadratic coefficients.' });
+    steps.push({ text: `Δ = b² − 4ac = (${format(b)})² − 4(${format(a)})(${format(c)})   ──➜   Δ = ${format(delta)}`, note: 'Calculate discriminant Δ.' });
 
     const sqrtDelta = exactSqrtFraction(delta);
 
@@ -419,20 +434,28 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
         const root2 = divide(subtract(negate(b), sqrtDelta), twoA);
 
         steps.push({
-          text: `Since Δ > 0 and is a perfect square (${format(delta)} = (${format(sqrtDelta)})²), there are two distinct rational solutions.`,
-          note: 'Apply Quadratic Formula: v = (−b ± √Δ) / 2a.'
+          text: `Since Δ > 0 (${format(delta)} = (${format(sqrtDelta)})²)   ──➜   Two distinct rational roots exist`,
+          note: `Apply the Quadratic Formula: ${variable} = (−b ± √Δ) / 2a.`
         });
         steps.push({
           text: `${variable} = (−(${format(b)}) ± ${format(sqrtDelta)}) ÷ (2 × ${format(a)})`,
           note: 'Substitute a, b, and √Δ into the formula.'
         });
         steps.push({
-          text: `${variable}₁ = (${format(negate(b))} + ${format(sqrtDelta)}) ÷ ${format(twoA)} = ${format(root1)}`,
+          text: `${variable}₁ = (${format(negate(b))} + ${format(sqrtDelta)}) ÷ ${format(twoA)}   ──➜   ${variable}₁ = ${format(root1)}`,
           note: 'First solution.'
         });
         steps.push({
-          text: `${variable}₂ = (${format(negate(b))} − ${format(sqrtDelta)}) ÷ ${format(twoA)} = ${format(root2)}`,
+          text: `${variable}₂ = (${format(negate(b))} − ${format(sqrtDelta)}) ÷ ${format(twoA)}   ──➜   ${variable}₂ = ${format(root2)}`,
           note: 'Second solution.'
+        });
+        steps.push({
+          text: `Check ${variable}₁: LHS = ${format(polyEvaluate(pLeft, root1))}   ⟹   RHS = ${format(polyEvaluate(pRight, root1))} ✓`,
+          note: 'Substitute the first exact root into the original equation.'
+        });
+        steps.push({
+          text: `Check ${variable}₂: LHS = ${format(polyEvaluate(pLeft, root2))}   ⟹   RHS = ${format(polyEvaluate(pRight, root2))} ✓`,
+          note: 'Substitute the second exact root into the original equation.'
         });
 
         return {
@@ -441,6 +464,7 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
           x: root1,
           solutions: [root1, root2],
           banner: `${variable} = ${format(root1)}  or  ${variable} = ${format(root2)}`,
+          formula: `Quadratic Formula: ${variable} = (−b ± √(b² − 4ac)) / (2a)   |   Δ = b² − 4ac`,
           steps
         };
       } else {
@@ -452,8 +476,8 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
         const r2 = (-bNum - sqrtVal) / twoANum;
 
         steps.push({
-          text: `Since Δ > 0 (${format(delta)}), there are two distinct real irrational solutions.`,
-          note: 'Apply Quadratic Formula: v = (−b ± √Δ) / 2a.'
+          text: `Since Δ > 0 (${format(delta)})   ──➜   Two distinct real irrational roots exist`,
+          note: `Apply the Quadratic Formula: ${variable} = (−b ± √Δ) / 2a.`
         });
         steps.push({
           text: `${variable} = (${format(negate(b))} ± √${format(delta)}) ÷ ${format(multiply(fraction(2n), a))}`,
@@ -463,23 +487,38 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
           text: `${variable}₁ ≈ ${Number(r1.toPrecision(7))},  ${variable}₂ ≈ ${Number(r2.toPrecision(7))}`,
           note: 'Decimal approximations.'
         });
+        const left1 = polyEvaluateNumber(pLeft, r1), right1 = polyEvaluateNumber(pRight, r1);
+        const left2 = polyEvaluateNumber(pLeft, r2), right2 = polyEvaluateNumber(pRight, r2);
+        steps.push({
+          text: `Check ${variable}₁ ≈ ${Number(r1.toPrecision(7))}: LHS ≈ ${Number(left1.toPrecision(7))}   ⟹   RHS ≈ ${Number(right1.toPrecision(7))}`,
+          note: 'The root is rounded, so the two sides agree approximately.'
+        });
+        steps.push({
+          text: `Check ${variable}₂ ≈ ${Number(r2.toPrecision(7))}: LHS ≈ ${Number(left2.toPrecision(7))}   ⟹   RHS ≈ ${Number(right2.toPrecision(7))}`,
+          note: 'The root is rounded, so the two sides agree approximately.'
+        });
 
         return {
           type: 'quadratic_two_roots',
           variable,
           banner: `${variable} ≈ ${Number(r1.toPrecision(7))}  or  ${variable} ≈ ${Number(r2.toPrecision(7))}`,
+          formula: `Quadratic Formula: ${variable} = (−b ± √(b² − 4ac)) / (2a)   |   Δ = b² − 4ac`,
           steps
         };
       }
     } else if (delta.n === 0n) {
       const root = divide(negate(b), multiply(fraction(2n), a));
       steps.push({
-        text: `Since Δ = 0, there is exactly one repeated real solution (double root).`,
+        text: `Since Δ = 0   ──➜   Exactly one repeated real root (double root)`,
         note: `${variable} = −b / 2a.`
       });
       steps.push({
-        text: `${variable} = −(${format(b)}) ÷ (2 × ${format(a)}) = ${format(root)}`,
+        text: `${variable} = −(${format(b)}) ÷ (2 × ${format(a)})   ──➜   ${variable} = ${format(root)}`,
         note: 'Double root.'
+      });
+      steps.push({
+        text: `Check at ${variable} = ${format(root)}: LHS = ${format(polyEvaluate(pLeft, root))}   ⟹   RHS = ${format(polyEvaluate(pRight, root))} ✓`,
+        note: 'Substitute the repeated root into the original equation.'
       });
 
       return {
@@ -488,6 +527,7 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
         x: root,
         solution: root,
         banner: `${variable} = ${format(root)} (double root)`,
+        formula: `Double Root Formula: ${variable} = −b / (2a)   (when Δ = 0)`,
         steps
       };
     } else {
@@ -497,8 +537,12 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
       const realPart = divide(negate(b), twoA);
 
       steps.push({
-        text: `Since Δ < 0 (${format(delta)}), there are no real solutions. The roots are two complex conjugate numbers.`,
+        text: `Since Δ < 0 (${format(delta)})   ──➜   Two complex conjugate roots (using i² = −1)`,
         note: 'Use imaginary unit i where i² = −1.'
+      });
+      steps.push({
+        text: `Reality check: Δ = ${format(delta)} < 0   ⟹   No real-number roots ✓`,
+        note: 'The complex conjugate roots shown below are the solutions when complex numbers are allowed.'
       });
       if (sqrtAbs !== null) {
         const imagPart = divide(sqrtAbs, twoA);
@@ -510,6 +554,7 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
           type: 'quadratic_complex',
           variable,
           banner: `${variable} = ${format(realPart)} ± ${format(imagPart)}i`,
+          formula: `Complex Roots: ${variable} = (−b ± i√|Δ|) / (2a)   (when Δ < 0)`,
           steps
         };
       } else {
@@ -521,6 +566,7 @@ export function solvePolynomialEquation(pLeft, pRight, variable = 'x', origLeftS
           type: 'quadratic_complex',
           variable,
           banner: `${variable} = (${format(negate(b))} ± i√${format(absDelta)}) / ${format(twoA)}`,
+          formula: `Complex Roots: ${variable} = (−b ± i√|Δ|) / (2a)   (when Δ < 0)`,
           steps
         };
       }
@@ -576,9 +622,10 @@ export function solveAlgebra(rawInput, forcedVar = null) {
       variable: targetVar,
       simplified: simplifiedStr,
       banner: `Simplified: ${simplifiedStr}`,
+      formula: `Distributive Law: a(b + c) = ab + ac   |   Combine like terms`,
       steps: [
-        { text: cleaned, note: 'Start with your expression.' },
-        { text: simplifiedStr, note: 'Expand parentheses and combine like terms.' }
+        { text: `Expression: ${cleaned}`, note: 'Start with your expression.' },
+        { text: `${cleaned}   ──➜   ${simplifiedStr} ✓`, note: 'Expand parentheses and combine like terms.' }
       ]
     };
   } catch (err) {
@@ -606,12 +653,15 @@ export function solve(aRaw, bRaw, cRaw, variable) {
       a, b, c,
       difference: diff,
       banner: type === 'infinite' ? 'Infinitely many solutions' : 'No solution',
+      formula: type === 'infinite'
+        ? `0·${varName} = 0   ──➜   Identity (holds true for all real numbers)`
+        : `0·${varName} = ${format(diff)} (≠ 0)   ──➜   Contradiction (no solution exists)`,
       steps: type === 'infinite'
         ? [
-            { text: `${format(b)} = ${format(c)} ✓`, note: `Since the coefficient of ${varName} is zero, the variable term disappears. Both sides are equal.` }
+            { text: `${format(b)} = ${format(c)}   ──➜   0 = 0 ✓`, note: `Since the coefficient of ${varName} is zero, the variable term disappears. Both sides are equal.` }
           ]
         : [
-            { text: `${format(b)} ≠ ${format(c)}`, note: `Since the coefficient of ${varName} is zero, the variable term disappears. The remaining statement is false.` }
+            { text: `${format(b)} ≠ ${format(c)}   ──➜   Contradiction! ✗`, note: `Since the coefficient of ${varName} is zero, the variable term disappears. The remaining statement is false.` }
           ]
     };
   }
@@ -624,12 +674,13 @@ export function solve(aRaw, bRaw, cRaw, variable) {
     x: sol,
     solution: sol,
     banner: `${varName} = ${format(sol)}`,
+    formula: `a·${varName} + b = c   ──➜   a·${varName} = c − b   ──➜   ${varName} = (c − b) / a`,
     approx: sol.d !== 1n ? approximate(sol) : null,
     steps: [
       { text: `${format(a)}${varName} + (${format(b)}) = ${format(c)}`, note: 'Start with your equation.' },
-      { text: `${format(a)}${varName} = ${format(c)} − (${format(b)}) = ${format(diff)}`, note: `Subtract ${format(b)} from both sides.` },
-      { text: `${varName} = (${format(diff)}) ÷ (${format(a)}) = ${format(sol)}`, note: `Divide both sides by ${format(a)}.` },
-      { text: `(${format(a)}) × (${format(sol)}) + (${format(b)}) = ${format(c)} ✓`, note: `Substitute ${varName} into the original equation to check.` }
+      { text: `${format(a)}${varName} + (${format(b)}) = ${format(c)}   ──➜   ${format(a)}${varName} = ${format(c)} − (${format(b)}) = ${format(diff)}`, note: `Subtract ${format(b)} from both sides.` },
+      { text: `${format(a)}${varName} = ${format(diff)}   ──➜   ${varName} = (${format(diff)}) ÷ (${format(a)})   ⟹   ${varName} = ${format(sol)}`, note: `Divide both sides by ${format(a)}.` },
+      { text: `Check at ${varName} = ${format(sol)}: ${format(a)} × (${format(sol)}) + (${format(b)}) = ${format(add(multiply(a, sol), b))}   ⟹   ${format(add(multiply(a, sol), b))} = ${format(c)} ✓`, note: `Substitute ${varName} into the original equation; both sides match exactly.` }
     ]
   };
 }

@@ -43,8 +43,32 @@
 .ai-explain-footer{margin-top:14px;padding-top:10px;border-top:1px solid #1a2f42;display:flex;justify-content:space-between;align-items:center}
 .ai-explain-footer button{background:none;border:none;color:#8cdeee;cursor:pointer;font-size:11px;padding:0}
 .ai-explain-footer button:hover{text-decoration:underline}
+.solution-formula-badge{padding:14px 18px;background:linear-gradient(135deg,#0d2238,#081324);border:1px solid #285770;border-left:4px solid var(--cyan);border-radius:9px;margin:18px 0 20px;box-shadow:0 4px 20px #04091480}
+.formula-badge-label{display:block;font-size:9px;letter-spacing:.15em;color:var(--cyan);font-weight:700;margin-bottom:6px}
+.formula-badge-code{display:block;font-family:'Consolas','Fira Code',monospace;font-size:13px;color:#daf5fa;overflow-x:auto;white-space:pre-wrap;line-height:1.6}
 @media(max-width:760px){
   .standard-input-grid{grid-template-columns:1fr 1fr}
   .calc-tabs{overflow-x:auto;flex-wrap:nowrap}
   .calc-tab{white-space:nowrap}
+}
+.step-content{min-width:0;flex:1}
+.step-flow,.explanation-flow-line,.formula-step-flow{display:flex;align-items:center;flex-wrap:wrap;gap:7px;min-width:0}
+.step-equation{padding:3px 7px;color:#d8edf7;font:12px/1.55 'Consolas','Fira Code',monospace;overflow-wrap:anywhere}
+.step-flow-item{min-width:0;padding:3px 7px;border:1px solid #243b54;border-radius:6px;background:#0a1424;color:#d8edf7;font:12px/1.55 'Consolas','Fira Code',monospace;overflow-wrap:anywhere}
+.step-flow-arrow{color:var(--cyan);font-size:15px;font-weight:800;line-height:1;white-space:nowrap;text-shadow:0 0 12px #42d8f655}
+.steps li{align-items:flex-start}
+.solution-formula-badge .formula-badge-code,.explanation-formula .formula-badge-code{font-size:clamp(12px,1.15vw,14px);overflow-wrap:anywhere}
+.formula-step-flow{font:inherit;color:#daf5fa;line-height:1.6}
+.explanation-formula{margin:4px 0 16px;padding:13px 15px;border:1px solid #285770;border-left:4px solid var(--cyan);border-radius:8px;background:linear-gradient(135deg,#0d2238,#081324)}
+.explanation-board{margin:12px 0 16px;padding:13px 14px;border:1px solid #263c54;border-radius:8px;background:#091322}
+.explanation-section-title{margin:0 0 9px;color:#82ddeb;font-size:9px;letter-spacing:.13em;font-weight:750}
+.explanation-flow-line{margin:7px 0}
+.explanation-prose{margin:7px 0;color:#c4d8ed;font-size:12px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}
+.explanation-section{margin:13px 0}
+.bubble.model .explanation-formula{margin-top:8px}
+@media(max-width:520px){
+  .step-flow,.explanation-flow-line,.formula-step-flow{gap:5px}
+  .step-flow-item{font-size:11px;padding:3px 5px}
+  .step-flow-arrow{font-size:13px}
+  .solution-formula-badge,.explanation-formula{padding:12px}
 }
