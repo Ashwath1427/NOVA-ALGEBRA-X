@@ -49,8 +49,7 @@ Use `Copy-Item .env.example .env` instead of `copy`. If PowerShell reports that 
 - **Calculator:** solves `ax + b = c` with every step and a substitution check. Handles `a = 0`, both no-solution and infinite-solution cases. Negative values, decimals and scientific notation are accepted; input fractions such as `1/2` should be entered as `0.5`.
 - **Exact arithmetic:** add, subtract, multiply and divide. BigInt fractions prevent errors such as `0.1 + 0.2` becoming `0.30000000000000004`. Fractional answers include a decimal approximation. Blank/invalid values and division by zero produce messages.
 - **Nova AI:** real server-side Gemini integration with conversation context, student-friendly system instructions, loading state, clear-chat, suggested prompts and honest error messages. No simulated answers or fallback pretending to be AI.
-- **Learning Lab:** interactive `y = mx + b` graph, slope/intercept sliders, graph reset, five cycling practice questions, answer checking and hints.
-- **Thank You:** dedicated closing screen and return-home button.
+- **Learning Lab:** interactive line graph with an editable equation field, synchronized slope/intercept controls, graph reset, five cycling practice questions, answer checking and hints.
 - Responsive layout, keyboard support, visible focus indicators, accessible labels and reduced-motion support. No CDN, external font or image download is required for the interface.
 
 ## Folder structure
@@ -114,7 +113,7 @@ Success: `{"reply":"..."}`. Errors: `{"error":"A safe explanation","code":"ERROR
 4. Open Learning Lab and vary the slope. Set it to zero, then move the intercept.
 5. Solve a practice challenge.
 6. If Gemini is configured, ask Nova AI: “Why do we do the same operation on both sides of an equation?”
-7. End with Thank You.
+7. Return home after exploring the calculator, tutor and Learning Lab.
 
 ## Troubleshooting
 
